@@ -42,6 +42,8 @@ Utils.rotateCoord = function(options) {
    return {x:x, y:y}
 };
 
+
+/****** Work with colection ******/
 Utils.cloneArray = function(arr) {
    if (!arr || !Utils.isArray(arr)) {
       throw new Error('To create a clone of the array I need to get the array, stupid programer');
@@ -119,3 +121,24 @@ Utils.isPlainObject = function(obj) {
    if(!obj || !obj.constructor) return false;
    return obj.constructor === Object;
 };
+/************************************************/
+
+
+/* ===== Work with value of ranges ===== */
+Utils.norm = function(value, min, max) {
+   return (value - min) / (max - min);
+};
+
+Utils.lerp = function(norm, min, max) {
+  return (max - min) * norm + min; 
+};
+
+Utils.map = function(value, sourceMin, sourceMax, destMin, destMax) {
+   var norm = Utils.norm(value, sourceMin, sourceMax);
+   return lerp(norm, destMin, destMax);
+};
+
+Utils.clamp = function(value, min, max) {
+   return Math.min(Math.max(value, min), max);
+};
+/*********************************/
