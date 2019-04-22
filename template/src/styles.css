@@ -10,3 +10,8 @@ canvas {
 	top: 0;
 	left: 0;
 }
+
+@font-face {
+    font-family: 'SignPainter-HouseScript';
+    src: url('./assets/fonts/SignPainter-HouseScript.otf') format('opentype');
+}

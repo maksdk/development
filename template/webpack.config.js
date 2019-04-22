@@ -37,7 +37,28 @@ module.exports = {
 			{
 				test: /\.css$/,
 				use: [MiniCssExtractPlugin.loader, 'css-loader']
-			}
+			},
+			{
+				test:/\.(jpe?g|png|gif|svg)$/,
+				use: {
+					loader:'url-loader',
+					options:{
+						limit: 1000, //kbt максимальный размер в килобайтех. если больше, то не будет переводит в Base64
+						outputPath: 'img/', // говорим чтобы все изображение поместил в папку img, если они весят больше 1000 байт
+						name:'[path][name].[ext]', // имя картинки
+					}
+				} 
+			},
+			{
+        test: /\.(woff(2)?|ttf|otf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [{
+            loader: 'file-loader',
+            options: {
+                name: '[name].[ext]',
+                outputPath: 'fonts/'
+            }
+        }]
+    }
 		]
 	},
 
