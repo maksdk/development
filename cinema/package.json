@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "test": "jest --colors",
+    "start": "babel-node index.js"
+  },
+  "dependencies": {
+    "uuid-js": "*"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.3",
+    "jest": "^24.7.1"
+  }
+}
