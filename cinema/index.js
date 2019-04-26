@@ -1,3 +1,14 @@
-import solution from './solution';
-//console.log(solution)
-console.log(solution('snack', 150, 'smily hall', 30, 50, new Date()).film.name)
+import { CinemaService } from './services';
+import * as repositories from './repositories';
+
+const repositoriesInstances = Object.keys(repositories)
+	.reduce((acc, name) => {
+		const instanceRepo = new repositories[name]();
+		return { [name]: instanceRepo, ...acc };
+	}, {});
+
+
+const service = new CinemaService(repositoriesInstances);
+const film =  service.createFilm('Batman', 150);
+
+console.table(service.FilmRepository.data)
