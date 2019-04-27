@@ -1,10 +1,12 @@
 {
   "scripts": {
     "test": "jest --colors",
-    "dev": "babel-node index.js"
+    "dev": "babel-node solution.js"
   },
   "dependencies": {
-    "uuid-js": "*"
+    "lodash": "^4.17.11",
+    "uuid-js": "*",
+    "validate.js": "^0.12.0"
   },
   "babel": {
     "presets": [

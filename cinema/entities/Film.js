@@ -7,7 +7,16 @@ export default class Film extends ApplicationEntity {
 		
 		this.name = name;
 		this.duration = duration;
-		this.id = uuid.create().toString();
+		this.id = uuid.create().hex;
 		this.createdAt = new Date();
+	}
+
+	static constraints = {
+		name: {
+			presence: true
+		},
+		duration: {
+			presence: true
+		}
 	}
 }

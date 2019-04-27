@@ -1,16 +1,30 @@
+import _ from 'lodash';
+
 export default class BaseRepository {
-	data = new Map();
+	data = [];
 
-	all() {
-		return this.data;
-	}
+  all() {
+    return this.data;
+  }
 
-	save(entity) {
-		this.data.set(entity.id, entity);
-	}
+  find(id) {
+    const result = this.data.find(entity => entity.id === id);
+    if (!result) {
+      throw new Error('Entity not found');
+    }
+    return result;
+  }
 
-	find(id) {
-		if (!this.data.has(id)) throw new Error('Entity not found');
-		return this.data.get(id);
-	}
+  findAllBy(params) {
+    return _.filter(this.data, params);
+  }
+
+  findBy(params) {
+    const result = this.findAllBy(params);
+    return result.length > 0 ? result[0] : null;
+  }
+
+  save(entity) {
+    this.data.push(entity);
+  }
 }
