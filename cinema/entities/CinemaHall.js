@@ -30,8 +30,4 @@ export default class CinemaHall extends ApplicationEntity {
 			}
 		}
 	}
-
-	addFilmScreening(screen) {
-		this.filmScreenings.push(screen);
-	}
 }
