@@ -1,9 +1,10 @@
 {
   "scripts": {
     "test": "jest --colors",
-    "dev": "babel-node solution.js"
+    "dev": "babel-node index.js"
   },
   "dependencies": {
+    "bottlejs": "^1.7.2",
     "lodash": "^4.17.11",
     "uuid-js": "*",
     "validate.js": "^0.12.0"

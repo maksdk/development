@@ -1,9 +1,7 @@
-import CinemaService from './CinemaService';
+import Cinema from './CinemaService';
 import UserService from './UserService';
 import MoneyService from './MoneyService';
 
 export { 
-	CinemaService,
-	UserService,
-	MoneyService
+	Cinema
 };
