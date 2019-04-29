@@ -1,0 +1,17 @@
+body {
+	background-color: #fff;
+	color: #000;
+	font-family: sans-serif;
+	font-size: 12px;
+	margin: 0;
+}
+
+fieldset {
+	border: none;
+}
+
+canvas {
+	display: block;
+	image-rendering: pixelated;
+	height: 100vh;
+}
