@@ -23,4 +23,8 @@ export default class FilmScreening extends ApplicationEntity {
 			presence: true
 		}
 	}
+	
+	valueOf() {
+    return this.id;
+  }
 }

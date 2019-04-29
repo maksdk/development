@@ -1,17 +1,12 @@
-import CinemaService from '../services/CinemaService';
-import * as repositories from '../repositories';
-import validator from '../lib/validate';
+// @flow
+
+import cinemaManager from '../../src';
 
 describe('CinemaService', () => {
   let service;
-
   beforeEach(() => {
-    const repositoryInstances = Object.keys(repositories)
-      .reduce(
-        (acc, name) => ({ [name]: new repositories[name](), ...acc }),
-        {},
-      );
-    service = new CinemaService(repositoryInstances, validator(repositoryInstances));
+    const app = cinemaManager();
+    service = app.services.cinema;
   });
 
   it('createFilm', () => {
@@ -57,8 +52,8 @@ describe('CinemaService', () => {
     const [filmScreening] = service.createFilmScreening(film.id, cinemaHall.id, time);
 
     const expected = {
-      // film,
-      // cinemaHall,
+      film,
+      cinemaHall,
       time,
     };
     expect(filmScreening).toMatchObject(expected);

@@ -19,8 +19,13 @@ export default class Ticket extends ApplicationEntyti {
 		filmScreening: {
 		 	presence: true,
 		 	uniqueness: {
-		 		scope: 'place'
-		 	}
+        scope: ['place'], 
+        conditions: { 
+        	fsm: { 
+        		current: 'active' 
+        	} 
+        },
+      },
 		},
 		user: {
 			presence: true

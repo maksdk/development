@@ -6,16 +6,16 @@ export default repositories => {
 	const entityValidate = entity => validate(entity, entity.constructor.constraints);
 
 	validate.validators.uniqueness = (value, options, key, attributes) => {
-		if (!value) return null;
-
-		const className = attributes.constructor.name;
-		const repository = repositories[`${className}Repository`];
-		const scope = options.scope || [];
-		const params = { [key]: value, ..._.pick(attributes, scope)};
-
-		const result = repository.findBy(params);
-
-		if (result && result.id !== attributes.id) {
+		if (!value) {
+      return null;
+    }
+    const className = attributes.constructor.name;
+    const repository = repositories[className];
+    const scope = options.scope || [];
+    const params = { [key]: value, ..._.pick(attributes, scope) };
+    const result = repository.findBy(params);
+    const isEntity = result instanceof BaseEntity;
+    if (result || (isEntity && result.id !== value.id)) {
       return 'already exists';
     }
     return null;
