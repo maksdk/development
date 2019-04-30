@@ -13,16 +13,17 @@ window.onload = function() {
 	var boxes = [];
 	var boundaries = [];
 	var circles = [];
+	window.circles = circles;
 
 
 	function setup() {
 		engine = Engine.create();
 		world = engine.world;
-
+		window._world = world;
 		Engine.run(engine);
 
-		boundaries.push(new Boundary(100, 100,  100, 10, Math.PI / 5, world));
-		boundaries.push(new Boundary(250, 300,  150, 10, -Math.PI / 5, world));
+		// boundaries.push(new Boundary(100, 100,  100, 10, Math.PI / 5, world));
+		// boundaries.push(new Boundary(250, 300,  150, 10, -Math.PI / 5, world));
 
 		// Events.on(engine, 'collisionStart', function(event) {
 	 //     console.log("Evento: ", event)
@@ -54,6 +55,14 @@ window.onload = function() {
     }
 
     for (var i = 0; i < circles.length; i++) {
+			
+			if (circles[i].isOnScreen(canvas.height)) {
+				circles[i].removeFromWorld()
+				circles.splice(i, 1);
+				
+				i -= 1;
+				continue;
+			}
 			circles[i].show(context);
     }
 

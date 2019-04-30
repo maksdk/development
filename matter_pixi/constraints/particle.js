@@ -1,7 +1,8 @@
-function Circle(x, y, r, world) {
+function Particle(x, y, r, fixed) {
 	var options = {
 		friction: 1,
-		restitution: 1
+		restitution: 1,
+		isStatic: fixed
 	};
 	this.r = r;
 
