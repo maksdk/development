@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "test": "jest --colors"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "bail": true
+  },
+  "devDependencies": {
+    "jest": "^24.7.1"
+  }
+}
