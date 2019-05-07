@@ -10,91 +10,30 @@ const del = require('del');
 
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 
-
 gulp.task("styles", function(cb) {
-	return gulp.src("frontend/styles/**/*.styl")
-		.pipe(stylus())
-		.pipe(gulp.dest("public"));
-});
-
-gulp.task("styles:base1", function(cb) {
 	return gulp.src("frontend/styles/**/*.styl", {base: "frontend"})
-		.pipe(stylus())
-		.pipe(gulp.dest("public"));
-});
-
-gulp.task("styles:base2", function(cb) {
-	return gulp.src("frontend/**/*.styl")
-		.pipe(stylus())
-		.pipe(gulp.dest("public"));
-});
-
-gulp.task("styles:concat", function(cb) {
-	return gulp.src("frontend/**/*.styl")
-		.pipe(stylus())
-		.pipe(concat("all.css"))
-		.pipe(gulp.dest("public"));
-});
-
-gulp.task("styles:debug", function(cb) {
-	return gulp.src("frontend/**/*.styl")
-		.pipe(debug({title:'src'}))
-		.pipe(stylus())
-		.pipe(debug({title:'stylus'}))
-		.pipe(concat("all.css"))
-		.pipe(debug({title:'concat'}))
-		.pipe(gulp.dest("public"));
-});
-
-gulp.task("styles:import", function(cb) {
-	return gulp.src("frontend/styles/main.styl")
-		.pipe(stylus())
-		.pipe(gulp.dest("public"));
-});
-
-gulp.task("styles:sourcemap", function(cb) {
-	return gulp.src("frontend/styles/main.styl")
-		.pipe(sourcemaps.init())
-		.pipe(stylus())
-		.pipe(sourcemaps.write())
-		.pipe(gulp.dest("public"));
-});
-
-gulp.task("styles:sourcemapCurrentDirectory", function(cb) {
-	return gulp.src("frontend/styles/main.styl")
-		.pipe(sourcemaps.init())
-		.pipe(stylus())
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest("public"));
-});
-
-/*copy all assets to publick*/
-gulp.task('assets', function(cb) {
-	return gulp.src("frontend/assets/**")
-		.pipe(gulp.dest('public'));
-});
-
-
-/*NODE_ENV=production gulp style:if*/
-gulp.task("styles:if", function(cb) {
-	return gulp.src("frontend/styles/main.styl")
 		.pipe(gulpIf(isDevelopment, sourcemaps.init()))
 		.pipe(stylus())
-		.pipe(gulpIf(isDevelopment, sourcemaps.write('.')))
+		.pipe(gulpIf(isDevelopment, sourcemaps.write()))
 		.pipe(gulp.dest("public"));
 });
 
-/*Delete folder 'public'*/
+gulp.task("assets", function(cb) {
+	return gulp.src("frontend/assets/**", {since: gulp.lastRun('assets')})
+		.pipe(debug({title: 'assets'}))
+		.pipe(gulp.dest("public"));
+});
+
+
 gulp.task('clean', function(cb) {
 	return del("public");
 });
 
+gulp.task("build", gulp.series( "clean", gulp.parallel("styles", "assets")));
 
-/*unite tasks*/
-gulp.task("build", 
-	gulp.series(
-		/*first clear*/
-		"clean", 
-		/*than paralle styles and assets*/
-		gulp.parallel("styles", "assets")
-	));
+gulp.task("watch", function() {
+	gulp.watch("frontend/styles/**/*.*", gulp.series("styles"));
+	gulp.watch("frontend/assets/**/*.*", gulp.series("assets"));
+});
+
+gulp.task("dev", gulp.series("build", "watch"));
