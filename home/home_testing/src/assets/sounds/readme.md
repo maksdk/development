@@ -1,0 +1,1 @@
+sounds - Звуки. Таска для упаковки: gulp "assets-sounds"

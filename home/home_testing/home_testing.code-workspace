@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../libs"
+		}
+	],
+	"settings": {
+		"typescript.validate.enable": false,
+		"javascript.validate.enable": false,
+		"files.exclude": {
+			"**/.*": true,
+			"node_modules/": true
+		}
+	}
+}

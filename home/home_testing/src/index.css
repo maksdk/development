@@ -1,0 +1,61 @@
+html, body {
+   margin: 0;
+   padding: 0;
+   overflow: hidden;
+   background: #000000;
+}
+
+
+
+#logo_portrait {
+   position: absolute;
+   width: 0;
+   height: 0;  
+   left: -1px;
+   top: -1px;
+}
+
+#logo_landscape {
+   position: absolute;
+   width: 0;
+   height: 0;  
+   left: -1px;
+   top: -1px;
+}
+
+
+
+#download_button_portrait {
+   position: absolute;
+   width: 0;
+   height: 0;  
+   left: -1px;
+   top: -1px;
+}
+
+#download_button_landscape {
+   position: absolute;
+   width: 0;
+   height: 0;  
+   left: -1px;
+   top: -1px;
+}
+
+
+#cake_portrait {
+   position: absolute;
+   width: 50%;
+   height: 0;  
+   top: auto;
+   bottom: 10%;
+   left: 50%;
+   transform: translateX(-50%)  /* rotate(30deg) */;
+}
+
+#cake_landscape {
+   position: absolute;
+   width: 0;
+   height: 0;  
+   left: -1px;
+   top: -1px;
+}
