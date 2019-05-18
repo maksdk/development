@@ -20,6 +20,15 @@ Utils.degToRad = function(deg){
 	return Math.PI / 180 * deg;
 };
 
+Utils.roundToPlaces = function(value, places) {
+   var mult = Math.pow(10, places);
+   return Math.round(value * mult) / mult;
+}
+
+Utils.roundNearest = function(value, nearest) {
+   return Math.round(value / nearest) * nearest;
+};
+
 Utils.rotateCoord = function(options) {
    if (typeof options.angle === 'undefined') return console.error('Angle is not found');
    if (typeof options.dx === 'undefined') return console.error('DistanceX is not found');
