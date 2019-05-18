@@ -119,7 +119,7 @@ Utils.isPlainObject = function(obj) {
 /************************************************/
 
 
-/* ===== Work with value of ranges ===== */
+/* ***** Work with value of ranges ***** */
 Utils.norm = function(value, min, max) {
    return (value - min) / (max - min);
 };
@@ -137,3 +137,42 @@ Utils.clamp = function(value, min, max) {
    return Math.min(Math.max(value, min), max);
 };
 /*********************************/
+
+/****** Work with layout ******/
+Utils.fitLayout = function(workWidth, workHeight, elemWidth, elemHeight) {
+   if (typeof workWidth !== 'number' ||
+      typeof workHeight !== 'number' || 
+      typeof elemWidth !== 'number' || 
+      typeof elemHeight !== 'number') {
+      throw new Error("I need to get a NUMBER. Programming is not for you.");
+   }
+
+   var land = LayoutManager.orientation === LayoutManager.LANDSCAPE;
+   var w, h;
+
+   if(land) {
+      h = elemWidth;
+      w = Math.floor(h * (workWidth / workHeight));
+
+      if (w < elemHeight) {
+         w = elemHeight;
+         h = Math.floor(elemHeight * (workHeight / workWidth));
+      }
+   }
+   else {
+      h = elemHeight;
+      w = Math.floor(h * (workWidth / workHeight));
+
+      if (w < elemWidth) {
+         w = elemWidth;
+         h = Math.floor(elemWidth * (workHeight / workWidth))
+      }
+   }
+
+   return {
+      scale: Math.min(workWidth / w, workHeight / h),
+      width: Math.min(workWidth, w),
+      height: Math.min(workHeight, h)
+   };
+}
+/**************************************/
