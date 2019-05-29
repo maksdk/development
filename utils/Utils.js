@@ -8,6 +8,14 @@ Utils.randomInt = function(min, max){
 	return Math.floor(min + Math.random() * (max - min + 1));
 };
 
+Utils.randomPI = function(){
+   return Math.acos((Math.random() * 2) - 1);
+};
+
+Utils.randomDoublePI = function(){
+   return Math.random() * 2 * Math.PI;
+};
+
 Utils.randomHexColor = function() {
    return'#' + Math.floor(Math.random() * 0xFFFFFF).toString(16);
 };
