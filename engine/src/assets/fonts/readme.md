@@ -1,0 +1,1 @@
+fonts - Шрифты. Таска для упаковки: gulp "assets-fonts"

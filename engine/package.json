@@ -1,0 +1,17 @@
+{
+  "name": "playable_ad",
+  "version": "0.0.1",
+  "description": "Playable Ad",
+  "main": "src/index.html",
+  "scripts": {},
+  "keywords": [
+    "playable"
+  ],
+  "author": "PlayToMax",
+  "facebookAppId": "",
+  "facebookAssetId": "",
+  "devDependencies": {
+    "eslint": "^5.12.0",
+    "gulp": "^3.9.1"
+  }
+}

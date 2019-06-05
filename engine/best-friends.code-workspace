@@ -1,0 +1,30 @@
+{
+	"folders": [
+      {
+         "path": "."
+      },
+      {
+         "path": "../libs"
+      },
+      {
+         "path": "E:/ads/development"
+      },
+      {
+         "path": "E:/ads/relaxing-jump"
+      },
+      {
+         "path": "E:/ads/pixi-lights"
+      },
+      {
+         "path": "E:/ads/pixi-display"
+      }
+   ],
+	"settings": {
+		"typescript.validate.enable": false,
+		"javascript.validate.enable": false,
+		"files.exclude": {
+			"**/.*": true,
+			"node_modules/": true
+		}
+	}
+}
