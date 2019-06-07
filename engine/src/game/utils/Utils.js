@@ -1,5 +1,19 @@
 var Utils = {};
 
+Utils.makeId = function(length) {
+   if (!length) length = 5;
+   
+   var result = '';
+   var characters = '0123456789';
+   var charactersLength = characters.length;
+
+   for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+};
+
+
 Utils.randomRange = function(min, max){
    return min + Math.random() * (max - min);
 };
@@ -128,9 +142,9 @@ Utils.lerp = function(norm, min, max) {
   return (max - min) * norm + min; 
 };
 
-Utils.map = function(value, sourceMin, sourceMax, destMin, destMax) {
-   var norm = Utils.norm(value, sourceMin, sourceMax);
-   return lerp(norm, destMin, destMax);
+Utils.map = function(value, fromMin, fromMax, toMin, toMax) {
+   var norm = Utils.norm(value, fromMin, fromMax);
+   return Utils.lerp(norm, toMin, toMax);
 };
 
 Utils.clamp = function(value, min, max) {

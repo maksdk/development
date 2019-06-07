@@ -47,6 +47,12 @@ function Field() {
    this.on("pointermove", this._drag);
    this.on("pointerup", this._endDrag);
    this.on("pointerupoutside", this._endDrag);
+
+
+
+
+   //  FIXME:  
+   this.destroyedTokens = [];
 }
 
 Field.prototype = Object.create(Sprite.prototype);
@@ -100,6 +106,10 @@ Field.prototype.addToken = function (x, y, id) {
    }
 
    token.tokenID = id;
+   
+   // TODO:  for test 
+   token.uuid = Utils.makeId();
+   ///
 
    return this.putToken(x, y, token);
 };
@@ -225,7 +235,7 @@ Field.prototype._selectToken = function (e, obj) {
          this.emit("all_possible_matches", matches);
       }
 
-      this.emit("select_token", {token: obj});
+      this.emit("select_token", { token: obj });
       return;
    }
 
@@ -243,7 +253,7 @@ Field.prototype._selectToken = function (e, obj) {
             obj.selected = true;
             this._selectedTokens.push(obj);
             this._selectedToken = obj;
-            this.emit("select_token", {token: obj});
+            this.emit("select_token", { token: obj });
          }
          return;
       }
@@ -283,7 +293,9 @@ Field.prototype._endDrag = function (e) {
    this._selectedToken = null;
 
    this.emit("end_action");
-   this.emit("user_action")
+   this.emit("user_action");
+
+   this.activeEngine();
 };
 
 Field.prototype._unselectLastToken = function (token) {
@@ -304,7 +316,7 @@ Field.prototype._unselectLastToken = function (token) {
 Field.prototype._unSelectTokens = function (tokens) {
    for (var i = 0; i < tokens.length; i++) {
       tokens[i].selected = false;
-      this.emit('unselect_token', {token: tokens[i]});
+      this.emit('unselect_token', { token: tokens[i] });
    }
 };
 
@@ -312,20 +324,27 @@ Field.prototype._destroyTokens = function (tokens) {
    var id = tokens[0].tokenID;
 
    for (var i = 0; i < tokens.length; i++) {
-      tokens[i].inDestroy = true;
+      //tokens[i].inDestroy = true;
+      //tokens[i].selected = false;
       this._destroySingleToken(tokens[i]);
    }
-   this.emit('destroy_tokens', { tokens: tokens.slice(), id: id });
+   this.destroyedTokens = tokens.slice();
+   this.emit('destroy_tokens', { tokens: this.destroyedTokens, id: id });
+
+   // FIXME:  
+   //this._moveTokens();
 };
 
 Field.prototype._destroySingleToken = function (obj) {
-   this.emit("destroy_token", {token: obj});
+   this.emit("destroy_token", { token: obj });
 
+   
    if (obj.onDestroy) obj.onDestroy();
+   if (obj.onStartDestroy) obj.onStartDestroy();
 
-   obj.selected = false;
-   obj.tokenID = 0;
-   obj.inDestroy = false;
+   //obj.selected = false;
+   //obj.tokenID = 0;
+   //obj.inDestroy = false;
 };
 
 Field.prototype.destroyTokenTest = function (obj) {
@@ -352,44 +371,6 @@ Field.prototype._swapTokens = function (t1, t2) {
    this.field[y2][x2].tokenY = y2;
 };
 
-Field.prototype._isWrapToken = function (token) {
-   if (!token) return false;
-   if (token.tokenID === 0) return false;
-   if (this.lockedCells[token.tokenY][token.tokenX]) return false;
-   if (this.tokenTypes[token.tokenID] && this.tokenTypes[token.tokenID].obstacle) return false;
-   return true;
-};
-
-Field.prototype._getWrapToken = function (token) {
-   var t2;
-
-   if (this.gravity.y !== 0) {
-      t2 = this.getToken(token.tokenX - 1, token.tokenY - this.gravity.y);
-      if (this._isWrapToken(t2)) return t2;
-
-      t2 = this.getToken(token.tokenX + 1, token.tokenY - this.gravity.y);
-      if (this._isWrapToken(t2)) return t2;
-   }
-
-   if (this.gravity.x !== 0) {
-      t2 = this.getToken(token.tokenX - this.gravity.x, token.tokenY - 1);
-      if (this._isWrapToken(t2)) return t2;
-
-      t2 = this.getToken(token.tokenX - this.gravity.x, token.tokenY + 1);
-      if (this._isWrapToken(t2)) return t2;
-   }
-
-   return null;
-};
-
-Field.prototype._isButtress = function (token) {
-   if (!token) return true;
-   if (token.tokenID > 0) return true;
-   if (this.tokenTypes[token.tokenID] && this.tokenTypes[token.tokenID].obstacle) return true;
-   if (this.lockedCells[token.tokenY][token.tokenX]) return true;
-   return false;
-};
-
 Field.prototype._moveSimpleTokens = function () {
    var f, fs, ok = true;
 
@@ -413,17 +394,24 @@ Field.prototype._moveSimpleTokens = function () {
                   !this.tokenTypes[fs.tokenID].obstacle) &&
                !this.lockedCells[y][x]) {
 
+
+
+               // FIXME: 
+               if (!fs.moves) fs.moves = [];
+               if (!fs.allMoves) fs.allMoves = [];
+
+
                if (fs.moves.length === 0) {
-                  fs.moves.push({ unikID: fs.unikID, x: fs.tokenX, y: fs.tokenY, type: "straight" });
+                  fs.moves.push({ token: fs, x: fs.tokenX, y: fs.tokenY, type: "straight" });
                }
-               fs.moves.push({ unikID: fs.unikID, x: x, y: y, type: "straight" });
+               fs.moves.push({ token: fs, x: x, y: y, type: "straight" });
 
 
                /*FOR ALL*/
                if (fs.allMoves.length === 0) {
-                  fs.allMoves.push({ unikID: fs.unikID, x: fs.tokenX, y: fs.tokenY, type: "straight" });
+                  fs.allMoves.push({ token: fs, x: fs.tokenX, y: fs.tokenY, type: "straight" });
                }
-               fs.allMoves.push({ unikID: fs.unikID, x: x, y: y, type: "straight" });
+               fs.allMoves.push({ token: fs, x: x, y: y, type: "straight" });
                ///////////
 
                this._swapTokens(f, fs);
@@ -464,17 +452,21 @@ Field.prototype._moveWrapTokens = function () {
                   this.linesY[fw.tokenX] += 1
                }
 
+               // FIXME: 
+               if (!fs.wrapMoves) fs.moves = [];
+               if (!fs.allMoves) fs.allMoves = [];
+
                if (fw.wrapMoves.length === 0) {
-                  fw.wrapMoves.push({ unikID: fw.unikID, x: fw.tokenX, y: fw.tokenY, type: "wrap" });
+                  fw.wrapMoves.push({ token: fw, x: fw.tokenX, y: fw.tokenY, type: "wrap" });
                }
-               fw.wrapMoves.push({ unikID: fw.unikID, x: x, y: y, type: "wrap" });
+               fw.wrapMoves.push({ token: fw, x: x, y: y, type: "wrap" });
 
 
                /*FOR ALL */
                if (fw.allMoves.length === 0) {
-                  fw.allMoves.push({ unikID: fw.unikID, x: fw.tokenX, y: fw.tokenY, type: "wrap" });
+                  fw.allMoves.push({ token: fw, x: fw.tokenX, y: fw.tokenY, type: "wrap" });
                }
-               fw.allMoves.push({ unikID: fw.unikID, x: x, y: y, type: "wrap" });
+               fw.allMoves.push({ token: fw, x: x, y: y, type: "wrap" });
                ///////////////
 
                this._swapTokens(f, fw);
@@ -489,6 +481,7 @@ Field.prototype._moveWrapTokens = function () {
 };
 
 Field.prototype._addNewToken = function (x, y, lenX, lenY) {
+   var tx, ty, i;
    var f = this._addRandomToken(x, y, false, this.globalBannedList);
 
    if (!f) return null;
@@ -499,17 +492,13 @@ Field.prototype._addNewToken = function (x, y, lenX, lenY) {
       if (this.gravity.x > 0) f.x = -lenX * this.spriteWidth + f.x;
       else f.x = this.width + lenX * this.spriteWidth - (this.width - f.x);
 
-      var x = Math.floor(f.x / this.spriteWidth);
-      var y = Math.floor(f.y / this.spriteHeight);
+      tx = Math.floor(f.x / this.spriteWidth);
+      ty = Math.floor(f.y / this.spriteHeight);
 
-      var moves = [];
-      var all = [];
-      for (var i = 1; i <= lenX; i++) {
-         moves.push({ x: x + i, y: y, type: "straight" });
-         all.push({ x: x, y: y + i, type: "straight" })
+      for (i = 1; i <= lenX; i++) {
+         f.addMove({ x: tx + i, y: ty, type: "straight"  });
       }
-      f.moves = f.moves.concat(moves);
-      f.allMoves = all;
+
    }
 
    if (this.gravity.y != 0) {
@@ -518,30 +507,15 @@ Field.prototype._addNewToken = function (x, y, lenX, lenY) {
       if (this.gravity.y > 0) f.y = -lenY * this.spriteHeight + f.y;
       else f.y = this.height + lenY * this.spriteHeight - (this.height - f.y);
 
-      var x = Math.floor(f.x / this.spriteWidth);
-      var y = Math.floor(f.y / this.spriteHeight);
+      tx = Math.floor(f.x / this.spriteWidth);
+      ty = Math.floor(f.y / this.spriteHeight);
 
-      var moves = [];
-
-      /*FOR ALL*/
-      var all = [];
-      ///////////
-
-      for (var i = 0; i <= lenY; i++) {
-         moves.push({ unikID: f.unikID, x: x, y: y + i, type: "straight" });
-
-         /*FOR ALL*/
-         all.push({ unikID: f.unikID, x: x, y: y + i, type: "straight" });
-         ///////
+      for (i = 0; i <= lenY; i++) {
+         f.addMove({ x: tx, y: ty + i, type: "straight" });
       }
-      f.moves = f.moves.concat(moves);
-
-      /*FOR ALL*/
-      f.allMoves = all;
-      //////////
    }
-   this.addedNewTokens.push(f);
-   this.emit("created_new_token", f);
+   
+   this.emit("add_new_token", f);
 };
 
 Field.prototype._addNewTokens = function () {
@@ -593,7 +567,8 @@ Field.prototype._addNewTokens = function () {
          if (this.gravity.y < 0) {
             for (y = this.rows - 1; y >= 0; y--) {
                f = this.field[y][x];
-               if (f.tokenID == 0 && !f.moved) {
+
+               if (f.tokenID == 0 && !f.moved && !this.lockedCells[y][x]) {
                   linesY[x]++;
                   this.linesY[x]++;
                }
@@ -604,7 +579,7 @@ Field.prototype._addNewTokens = function () {
             for (y = 0; y < this.rows; y++) {
                f = this.field[y][x];
 
-               if (f.tokenID == 0 && !f.moved) {
+               if (f.tokenID == 0 && !f.moved && !this.lockedCells[y][x]) {
                   linesY[x]++;
                   this.linesY[x]++;
                }
@@ -623,202 +598,7 @@ Field.prototype._addNewTokens = function () {
          }
       }
    }
-
-   /*if (isAdded) this.emit("add_new_tokens");*/
 };
-
-// TODO : ОТРЕФАКТОРИТЬ
-Field.prototype._moveTokens = function () {
-   var ok = true;
-   var newMoves = [];
-   var testM = [];
-
-   while (ok) {
-      this._moveSimpleTokens();
-      this._addNewTokens();
-
-      /*NEW */
-      var moves = this._getMoves();
-      if (moves.length > 0) {
-         var ms = [];
-
-         var res = moves.forEach(function (move) {
-            ms.push({ token: move.token, moves: Utils.cloneArray(move.simpleMoves) });
-            newMoves/*ms*/.push({
-               token: move.token,
-               simpleMoves: Utils.cloneArray(move.simpleMoves),
-               wrapMoves: Utils.cloneArray(move.wrapMoves),
-               moves: Utils.cloneArray(move.simpleMoves)
-            });
-         });
-         testM.push(ms);
-         //newMoves.push(ms);
-         for (var y = 0; y < this.rows; y++) {
-            for (var x = 0; x < this.cols; x++) {
-               if (this.field[y] && this.field[y][x]) {
-                  this.field[y][x].moves = [];
-                  this.field[y][x].wrapMoves = [];
-                  this.field[y][x].allMoves = [];
-               }
-            }
-         }
-      }
-      //////
-
-
-      this._moveWrapTokens();
-
-      /*NEW */
-      var moves = this._getMoves();
-      if (moves.length > 0) {
-         var ms = [];
-         var res = moves.forEach(function (move) {
-            ms.push({ token: move.token, moves: Utils.cloneArray(move.wrapMoves) });
-
-            newMoves/*ms*/.push({
-               token: move.token,
-               simpleMoves: Utils.cloneArray(move.simpleMoves),
-               wrapMoves: Utils.cloneArray(move.wrapMoves),
-               moves: Utils.cloneArray(move.wrapMoves)
-            });
-         });
-         testM.push(ms);
-         // newMoves.push(ms);
-         for (var y = 0; y < this.rows; y++) {
-            for (var x = 0; x < this.cols; x++) {
-               if (this.field[y] && this.field[y][x]) {
-                  this.field[y][x].moves = [];
-                  this.field[y][x].wrapMoves = [];
-                  this.field[y][x].allMoves = [];
-               }
-            }
-         }
-      }
-      ////////////
-
-
-
-      ok = !this._fieldIsFilled();
-   }
-
-   /*FOR ALL */
-   /*var sorted = this.sortMoves();
-   this.emit("move_tokens", sorted);
-   this._unMoveTokens();*/
-
-
-
-   /*OLD */
-   /*var moves = this._getMoves();
-   if (moves.length > 0) {
-       this.emit("move_tokens", newMoves);
-       this._unMoveTokens();
-   }*/
-   //console.log(newMoves)
-
-   // newMoves.forEach((item,  i) => {
-   //     if (item.token.tokenID === 2) {
-   //         console.log("index", i)
-   //         console.log("item", item)
-   //     }
-   // })
-
-   this.emit("all_tokens_created", Utils.cloneArray(this.addedNewTokens));
-
-   this.emit("move_tokens", { data: newMoves, testMoves: testM, newTokens: Utils.cloneArray(this.addedNewTokens) });
-
-   this.linesX = [];
-   this.linesY = [];
-   this.addedNewTokens = [];
-
-};
-
-/*FOR ALL */
-/*Field.prototype.sortMoves = function() {
-    var allMoves = this._getMoves();
-
-    var mapedMoves = allMoves.map(function(item) {
-        return { token: item.token, moves: item.all.slice() };
-    });
-
-    var result = [];
-
-    for (var i = 0; i < mapedMoves.length; i++) {
-        result.push(
-            {
-                moves: this.splitMoves(mapedMoves[i].moves, mapedMoves[i].token), 
-                token: mapedMoves[i].token 
-            }
-        );
-    }
-    console.log(result)
-    return result;
-};
-
-Field.prototype.splitMoves = function(moves, token) {
-    if (!moves || moves.length <= 0) return moves;
-
-    var type = moves[0].type;
-
-    var splited = [];
-    var sorted = [];
-
-    for (var i = 0; i < moves.length; i++) {
-        
-        moves[i].type = type;
-
-        switch(type) {
-            case "straight":
-                sorted.push(moves[i]);
-
-                if (moves[i + 1] && moves[i + 1].type !== "straight") {
-                    splited.push(Utils.cloneArray(sorted));
-                    sorted = [];
-
-                    type = moves[i + 1].type;
-                    i -= 1;
-                }
-
-                if (i + 1 >= moves.length) splited.push(sorted);
-
-                break;
-
-            case "wrap":
-                sorted.push(moves[i]);
-
-                if (moves[i + 1] && moves[i + 1].type !== "wrap") {
-                    splited.push(Utils.cloneArray(sorted));
-                    sorted = [];
-
-                    type = moves[i + 1].type;
-                    i -= 1;
-                }
-
-                if (i + 1 >= moves.length) splited.push(sorted);
-
-                break;
-            default:
-                throw new Error('Unexpected type ' + type);
-        }
-    }
-    return splited;
-};*/
-
-Field.prototype._unMoveTokens = function (e) {
-   for (var y = 0; y < this.rows; y++) {
-      for (var x = 0; x < this.cols; x++) {
-         if (this.field[y] && this.field[y][x]) {
-            this.field[y][x].moves = [];
-            this.field[y][x].wrapMoves = [];
-            this.field[y][x].allMoves = [];
-         }
-      }
-   }
-
-   this.linesX = [];
-   this.linesY = [];
-};
-
 
 Field.prototype._getMoves = function () {
    var moves = [];
@@ -949,3 +729,483 @@ Field.prototype.getMatchesByToken = function (token) {
    }
    return allMoves;
 };
+
+
+Field.prototype._moveStraight = function () {
+   var f, fs, ok = true;
+   var startX = 0, endX = this.cols, startY = 0, endY = this.rows;
+
+   if (this.gravity.x > 0) startX = 1;
+   if (this.gravity.x < 0) endX = this.cols - 1;
+
+   if (this.gravity.y > 0) startY = 1;
+   if (this.gravity.y < 0) endY = this.rows - 1;
+
+   // FIXME:  
+   const getExistedToken = (x, y) => {
+      var t = this.field[y] && this.field[y][x];
+
+      if (!t) return null;
+      if (this.lockedCells[y][x]) return null;
+      if (!this.tokenTypes[t.tokenID]) return null;
+      if (this.tokenTypes[t.tokenID].obstacle) return null;
+      if (t.tokenID === 0) return null;
+
+      return t;
+   };
+
+   const getDestroyedToken = (x, y) => {
+      var t = this.field[y] && this.field[y][x];
+
+      if (!t) return null;
+      if (this.lockedCells[y][x]) return null;
+      if (!this.tokenTypes[t.tokenID]) return null;
+      if (this.tokenTypes[t.tokenID].obstacle) return null;
+      if (t.tokenID !== 0) return null;
+
+      return t;
+   };
+
+   const isEndMoving = (x, y) => {
+      var t = this.field[y] && this.field[y][x];
+
+      if (!t) return true;
+      if (this.lockedCells[y][x]) return true;
+      if (this.tokenTypes[t.tokenID] && t.tokenID !== 0) return true;
+      if (this.tokenTypes[t.tokenID].obstacle) return true;
+      
+      return false;
+   };
+   //!
+
+
+   while (ok) {
+
+      ok = false;
+
+      // for (y = startY; y < endY; y++) {
+      //    for (x = startX; x < endX; x++) {
+
+      //       var emptyToken = this._getEmptyToken(x, y);
+      //       var moveToken = this._getMoveToken(x + -this.gravity.x, y + -this.gravity.y)
+
+      //       if (emptyToken && moveToken) {
+
+      //          if (moveToken.moves.length === 0) {
+      //             moveToken.addMove({ x: moveToken.tokenX, y: moveToken.tokenY, type: "straight" });  
+      //          }
+
+      //          moveToken.addMove({ x: x, y: y, type: "straight" });
+
+      //          this._swapTokens(emptyToken, moveToken);
+
+      //          ok = true;
+      //       }
+      //    }
+      // }
+
+      // FIXME:   
+      if (this.gravity.y !== 0) {
+         var existedToken, destroyedToken, isEnd;
+
+         for (y = startY; y < endY; y++) {
+            for (x = startX; x < endX; x++) {
+               
+               // NOTE:  check down
+               existedToken = getExistedToken(x, y);
+               destroyedToken = getDestroyedToken(x, y + this.gravity.y);
+
+               if (existedToken && destroyedToken) {
+                  if (existedToken.moves.length === 0) {
+                     existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
+                  }
+
+                  existedToken.addMove({ x: x, y: y});
+
+                  this._swapTokens(destroyedToken, existedToken);
+                  ok = true;
+                  continue;
+               }
+               
+               // NOTE:  check right and down
+               isEnd = isEndMoving(x, y + this.gravity.y);
+               destroyedToken = getDestroyedToken(x + 1, y + this.gravity.y);
+
+               if (existedToken && destroyedToken && isEnd) {
+                  if (existedToken.moves.length === 0) {
+                     existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
+                  }
+
+                  existedToken.addMove({ x: x, y: y});
+
+                  this._swapTokens(destroyedToken, existedToken);
+                  ok = true;
+                  continue;
+               }
+
+               // NOTE:  check  left and down
+               destroyedToken = getDestroyedToken(x - 1, y + this.gravity.y);
+
+               if (existedToken && destroyedToken && isEnd) {
+                  if (existedToken.moves.length === 0) {
+                     existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
+                  }
+
+                  existedToken.addMove({ x: x, y: y});
+
+                  this._swapTokens(destroyedToken, existedToken);
+                  ok = true;
+                  continue;
+               }
+            }
+         }
+      }
+      //!
+   }
+};
+
+Field.prototype._moveWrap = function () {
+   var f, fs, ok = true;
+   var startX = 0, endX = this.cols, startY = 0, endY = this.rows;
+
+   if (this.gravity.x > 0) startX = 1;
+   if (this.gravity.x < 0) endX = this.cols - 1;
+   if (this.gravity.y > 0) startY = 1;
+   if (this.gravity.y < 0) endY = this.rows - 1;
+   //debugger;
+   for (y = startY; y < endY; y++) {
+      for (x = startX; x < endX; x++) {
+
+         var emptyToken = this._getEmptyToken(x, y);
+         var buttressToken = this._isButtress(x + this.gravity.x, y + this.gravity.y)
+
+         if (emptyToken && buttressToken) {
+
+            var wrapToken = this._getWrapToken(emptyToken);
+
+            if (wrapToken) {
+
+               if (this.linesY[wrapToken.tokenX] > 0) {
+                  this.linesY[wrapToken.tokenX] += 1
+               }
+   
+               if (this.linesX[wrapToken.tokenY] > 0) {
+                  this.linesX[wrapToken.tokenY] += 1
+               }
+
+               if (wrapToken.moves.length === 0) {
+                  wrapToken.addMove({ x: wrapToken.tokenX, y: wrapToken.tokenY, type: "wrap" });
+               }
+               wrapToken.addMove({ x: x, y: y, type: "wrap" });
+
+               this._swapTokens(emptyToken, wrapToken);
+            }
+         }
+      }
+   }
+};
+
+
+Field.prototype._getMoveToken = function (x, y) {
+   var t = this.getToken(x, y);
+
+   if (!t) return null;
+   if (!this.tokenTypes[t.tokenID]) return null;
+   if (this.tokenTypes[t.tokenID].obstacle) return null;
+   if (t.moved) return null;
+
+   return t;
+};
+
+Field.prototype._getEmptyToken = function (x, y) {
+   var t = this.field[y] && this.field[y][x] || null;
+
+   if (!t) return null;
+   if (t.tokenID !== 0) return null;
+   if (!this.tokenTypes[t.tokenID]) return null;
+   if (this.tokenTypes[t.tokenID].obstacle) return null;
+   if (this.lockedCells[y][x]) return null;
+   if (t.moved) return null;
+
+   return t;
+};
+
+Field.prototype._isButtress = function (x, y) {
+   var t = this.field[y] && this.field[y][x];
+
+   if (!t) return true;
+   if (t.tokenID > 0 && !t.moved) return true;
+
+   if (t.moved) return false;
+
+   if (this.tokenTypes[t.tokenID] && this.tokenTypes[t.tokenID].obstacle) return true;
+   if (this.lockedCells[t.tokenY][t.tokenX]) return true;
+
+   return false;
+};
+
+Field.prototype._isWrapToken = function (token) {
+   if (!token) return false;
+   if (token.tokenID === 0) return false;
+   if (this.lockedCells[token.tokenY][token.tokenX]) return false;
+   if (this.tokenTypes[token.tokenID] && this.tokenTypes[token.tokenID].obstacle) return false;
+   return true;
+};
+
+// Field.prototype._getWrapToken = function (token) {
+//    var t2;
+
+//    if (this.gravity.y !== 0) {
+//       t2 = this.getToken(token.tokenX - 1, token.tokenY - this.gravity.y);
+//       if (this._isWrapToken(t2)) return t2;
+
+//       t2 = this.getToken(token.tokenX + 1, token.tokenY - this.gravity.y);
+//       if (this._isWrapToken(t2)) return t2;
+//    }
+
+//    if (this.gravity.x !== 0) {
+//       t2 = this.getToken(token.tokenX - this.gravity.x, token.tokenY - 1);
+//       if (this._isWrapToken(t2)) return t2;
+
+//       t2 = this.getToken(token.tokenX - this.gravity.x, token.tokenY + 1);
+//       if (this._isWrapToken(t2)) return t2;
+//    }
+
+//    return null;
+// };
+
+
+// FIXME:   to make for gravity.x too 
+Field.prototype._getWrapToken = function (token) {
+   var t2, startY;
+
+   if (this.gravity.y !== 0) {
+      
+      startY = token.tokenY - this.gravity.y;
+
+      for (var y = startY; y < this.rows && y >= 0; y -= this.gravity.y) {
+         t2 = this.getToken(token.tokenX - 1, y);
+         if (this._isWrapToken(t2)) return t2;
+
+         t2 = this.getToken(token.tokenX + 1, y);
+         if (this._isWrapToken(t2)) return t2;
+      }
+   }
+
+   if (this.gravity.x !== 0) {
+      t2 = this.getToken(token.tokenX - this.gravity.x, token.tokenY - 1);
+      if (this._isWrapToken(t2)) return t2;
+
+      t2 = this.getToken(token.tokenX - this.gravity.x, token.tokenY + 1);
+      if (this._isWrapToken(t2)) return t2;
+   }
+
+   return null;
+};
+//!
+
+
+Field.prototype.lockUserAction = function () {
+   this.userActionsLocked = true;
+};
+
+Field.prototype.unLockUserAction = function () {
+   this.userActionsLocked = false;
+};
+
+Field.prototype.activeEngine = function () {
+   this._activeEngine = true;
+   this.emit("active_engine");
+};
+
+Field.prototype.unActiveEngine = function () {
+   this._activeEngine = false;
+   this._unMoveTokens();
+   this.emit("complete_engine");
+};
+
+Field.prototype.tick = function (delta) {
+   if (this.paused) return;
+
+   if (this._activeEngine && this.isDestroyedTokens()) {
+      this.move();
+      this.unActiveEngine();
+   }
+};
+
+Field.prototype.move = function() {
+   var ok = true;
+   var moves = [];
+   var tokens = [];
+   var x, y;
+
+   
+   var __test = []; // FIXME:   for testing 
+
+
+   while(ok) {
+      this._moveStraight();
+      this._addNewTokens();
+
+      // NOTE:  get moves afier straight move
+
+      var __midTest = []; // FIXME:  test 
+
+      for (y = 0; y < this.rows; y++) {
+         for (x = 0; x < this.cols; x++) {
+            if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
+               //console.log(moves);
+               moves.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
+               
+               // FIXME:  
+               __midTest.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
+               
+               this.field[y][x].moves = [];
+            }
+         }
+      }
+      // *
+
+      if (__midTest.length > 0) __test.push(__midTest); // FIXME:  
+
+
+      this._moveWrap();
+
+
+      // FIXME:  
+      __midTest = [];
+
+      // NOTE:  get moves after wrap move 
+      for (y = 0; y < this.rows; y++) {
+         for (x = 0; x < this.cols; x++) {
+            if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
+               moves.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
+
+               // FIXME:  
+               __midTest.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)})
+
+               this.field[y][x].moves = [];
+            }
+         }
+      }
+      // *
+
+      if (__midTest.length > 0) __test.push(__midTest); // FIXME:  
+
+      ok = !this._isAllTokensMoved()
+   }
+
+   // NOTE:  clear data 
+   moves.forEach(function(props, index) {
+      var t = props.token;
+      var ms = props.moves;
+      t.moves.push(ms);
+   });
+   // * 
+
+   // NOTE:  get tokens with moves 
+   for (y = 0; y < this.rows; y++) {
+      for (x = 0; x < this.cols; x++) {
+         if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
+            tokens.push(this.field[y][x]);
+         }
+      }
+   }
+   // * 
+
+   console.log('log', __test);
+   
+   this.emit("move", { tokens: tokens, test: __test });
+};
+
+Field.prototype.getTokensWithMoves = function() {
+   var tokens = [];
+   for (var y = 0; y < this.rows; y++) {
+      for (var x = 0; x < this.cols; x++) {
+         if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
+            tokens.push(this.field[y][x]);
+         }
+      }
+   }
+};
+
+
+
+Field.prototype._unMoveTokens = function (e) {
+   this.linesX = [];
+   this.linesY = [];
+};
+
+Field.prototype._isAllTokensMoved = function () {
+   for (var y = 0; y < this.rows; y++) {
+      for (var x = 0; x < this.cols; x++) {
+         if (!this.lockedCells[y][x] && this.field[y][x].tokenID === 0) {
+            //console.log( "x", x, "y", y);
+            return false;
+         }
+      }
+   }
+   return true;
+};
+
+Field.prototype.isDestroyedTokens = function() {
+   for (y = 0; y < this.rows; y++) {
+      for (x = 0; x < this.cols; x++) {
+         if (this.field[y][x].inDestroy) return false;
+      }
+   }
+   return true;
+};
+
+
+// Field.prototype.moveS = function () {
+//    if (this.isMoved()) return;
+
+//    this._moveStraight();
+//    this._addNewTokens();
+
+//    var ts = [];
+
+//    for (y = 0; y < this.rows; y++) {
+//       for (x = 0; x < this.cols; x++) {
+//          var t = this.field[y][x];
+
+//          if (!t.moved && t.moves && t.moves.length > 0) {
+//             t.onStartMove();
+//             ts.push(t);
+//             this.emit("move_token", { token: t });
+//          }
+//       }
+//    }
+// };
+
+// Field.prototype.moveW = function () {
+//    if (this.isMoved()) return;
+
+//    this._moveWrap();
+
+//    var ts = [];
+
+//    for (y = 0; y < this.rows; y++) {
+//       for (x = 0; x < this.cols; x++) {
+//          var t = this.field[y][x];
+
+//          if (!t.moved && t.moves && t.moves.length > 0) {
+//             t.onStartMove();
+//             ts.push(t);
+//             this.emit("move_token", { token: t });
+//          }
+//       }
+//    }
+//    //console.log('log', ts);
+// };
+
+
+// Field.prototype.isMoved = function() {
+//    for (y = 0; y < this.rows; y++) {
+//       for (x = 0; x < this.cols; x++) {
+//          if (this.field[y][x].moved) return true;
+//       }
+//    }
+//    return false;
+// };
