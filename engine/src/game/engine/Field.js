@@ -805,17 +805,40 @@ Field.prototype._moveStraight = function () {
       // }
 
       // FIXME:   
+      var startX = 0, endX = this.cols - 1, startY = 0, endY = this.rows - 1;
+      if (this.gravity.x > 0) {
+         endX = this.cols - 1;
+         startX = 0;
+      }
+      if (this.gravity.x < 0) {
+         startX = this.cols - 1;
+         endX = 0;
+      }
+
+      if (this.gravity.y > 0) {
+         startY = 0;
+         endY = this.rows - 1;
+      }
+
+      if (this.gravity.y < 0) {
+         endY = 0;
+         startY = this.rows - 1;
+      }
+
+
       if (this.gravity.y !== 0) {
          var existedToken, destroyedToken, isEnd;
-
-         for (y = startY; y < endY; y++) {
-            for (x = startX; x < endX; x++) {
+         
+         for (var y = 0; y < 3; y++) {
+            for (var x = 4; x < 5; x++) {
                
                // NOTE:  check down
                existedToken = getExistedToken(x, y);
                destroyedToken = getDestroyedToken(x, y + this.gravity.y);
-
+               console.log(existedToken)
+               
                if (existedToken && destroyedToken) {
+                  
                   if (existedToken.moves.length === 0) {
                      existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
                   }
@@ -827,36 +850,36 @@ Field.prototype._moveStraight = function () {
                   continue;
                }
                
-               // NOTE:  check right and down
-               isEnd = isEndMoving(x, y + this.gravity.y);
-               destroyedToken = getDestroyedToken(x + 1, y + this.gravity.y);
+               // // NOTE:  check right and down
+               // isEnd = isEndMoving(x, y + this.gravity.y);
+               // destroyedToken = getDestroyedToken(x + 1, y + this.gravity.y);
 
-               if (existedToken && destroyedToken && isEnd) {
-                  if (existedToken.moves.length === 0) {
-                     existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
-                  }
+               // if (existedToken && destroyedToken && isEnd) {
+               //    if (existedToken.moves.length === 0) {
+               //       existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
+               //    }
 
-                  existedToken.addMove({ x: x, y: y});
+               //    existedToken.addMove({ x: x, y: y});
 
-                  this._swapTokens(destroyedToken, existedToken);
-                  ok = true;
-                  continue;
-               }
+               //    this._swapTokens(destroyedToken, existedToken);
+               //    ok = true;
+               //    continue;
+               // }
 
-               // NOTE:  check  left and down
-               destroyedToken = getDestroyedToken(x - 1, y + this.gravity.y);
+               // // NOTE:  check  left and down
+               // destroyedToken = getDestroyedToken(x - 1, y + this.gravity.y);
 
-               if (existedToken && destroyedToken && isEnd) {
-                  if (existedToken.moves.length === 0) {
-                     existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
-                  }
+               // if (existedToken && destroyedToken && isEnd) {
+               //    if (existedToken.moves.length === 0) {
+               //       existedToken.addMove({ x: existedToken.tokenX, y: existedToken.tokenY });  
+               //    }
 
-                  existedToken.addMove({ x: x, y: y});
+               //    existedToken.addMove({ x: x, y: y});
 
-                  this._swapTokens(destroyedToken, existedToken);
-                  ok = true;
-                  continue;
-               }
+               //    this._swapTokens(destroyedToken, existedToken);
+               //    ok = true;
+               //    continue;
+               // }
             }
          }
       }
@@ -1043,64 +1066,64 @@ Field.prototype.move = function() {
    var __test = []; // FIXME:   for testing 
 
 
-   while(ok) {
+   //while(ok) {
       this._moveStraight();
-      this._addNewTokens();
+      //this._addNewTokens();
 
-      // NOTE:  get moves afier straight move
+      //// NOTE:  get moves afier straight move
 
-      var __midTest = []; // FIXME:  test 
+      //var __midTest = []; // FIXME:  test 
 
-      for (y = 0; y < this.rows; y++) {
-         for (x = 0; x < this.cols; x++) {
-            if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
-               //console.log(moves);
-               moves.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
+      // for (y = 0; y < this.rows; y++) {
+      //    for (x = 0; x < this.cols; x++) {
+      //       if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
+      //          //console.log(moves);
+      //          moves.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
                
-               // FIXME:  
-               __midTest.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
+      //          // FIXME:  
+      //          __midTest.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
                
-               this.field[y][x].moves = [];
-            }
-         }
-      }
-      // *
+      //          this.field[y][x].moves = [];
+      //       }
+      //    }
+      // }
+      // // *
 
-      if (__midTest.length > 0) __test.push(__midTest); // FIXME:  
-
-
-      this._moveWrap();
+      // if (__midTest.length > 0) __test.push(__midTest); // FIXME:  
 
 
-      // FIXME:  
-      __midTest = [];
+      // this._moveWrap();
 
-      // NOTE:  get moves after wrap move 
-      for (y = 0; y < this.rows; y++) {
-         for (x = 0; x < this.cols; x++) {
-            if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
-               moves.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
 
-               // FIXME:  
-               __midTest.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)})
+      // // FIXME:  
+      // __midTest = [];
 
-               this.field[y][x].moves = [];
-            }
-         }
-      }
-      // *
+      // // NOTE:  get moves after wrap move 
+      // for (y = 0; y < this.rows; y++) {
+      //    for (x = 0; x < this.cols; x++) {
+      //       if (!this.lockedCells[y][x] && this.field[y][x].moves.length) {
+      //          moves.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)});
 
-      if (__midTest.length > 0) __test.push(__midTest); // FIXME:  
+      //          // FIXME:  
+      //          __midTest.push({token: this.field[y][x], moves: Utils.cloneArray(this.field[y][x].moves)})
 
-      ok = !this._isAllTokensMoved()
-   }
+      //          this.field[y][x].moves = [];
+      //       }
+      //    }
+      // }
+      // // *
+
+      // if (__midTest.length > 0) __test.push(__midTest); // FIXME:  
+
+      //ok = !this._isAllTokensMoved()
+   //}
 
    // NOTE:  clear data 
-   moves.forEach(function(props, index) {
-      var t = props.token;
-      var ms = props.moves;
-      t.moves.push(ms);
-   });
+   // moves.forEach(function(props, index) {
+   //    var t = props.token;
+   //    var ms = props.moves;
+   //    t.moves.push(ms);
+   // });
    // * 
 
    // NOTE:  get tokens with moves 
@@ -1113,7 +1136,7 @@ Field.prototype.move = function() {
    }
    // * 
 
-   console.log('log', __test);
+   console.log('log', tokens);
    
    this.emit("move", { tokens: tokens, test: __test });
 };
