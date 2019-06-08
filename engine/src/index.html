@@ -2,107 +2,56 @@
 <html>
 
 <head>
-   <title>Playable ad</title>
+  <title>Playable ad</title>
 
-   <meta charset="utf-8">
-   <meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-   <meta name="author" content="Vungle">
-   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="author" content="Vungle">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-   <!-- build:css index.css -->
-   <link rel="stylesheet" type="text/css" href="index.css" />
-   <!-- endbuild -->
+  <!-- build:css index.css -->
+  <link rel="stylesheet" type="text/css" href="index.css" />
+  <!-- endbuild -->
 
-   <script type="text/javascript" src="mraid.js"></script>
+  <script type="text/javascript" src="mraid.js"></script>
 
-   <!-- build:js vendor.js -->
-   <script type="text/javascript" src="../../libs/vendor/pixi.js"></script>
-   <script type="text/javascript" src="../../libs/vendor/fontfaceobserver.js"></script>
-   <script type="text/javascript" src="../../libs/vendor/tweenjs.js"></script>
-   <script type="text/javascript" src="../../libs/vendor/howler.js"></script>
-   <script type="text/javascript" src="../../libs/vendor/pixi-particles.js"></script>
-   <!-- endbuild -->
+  <!-- build:js vendor.js -->
+  <script type="text/javascript" src="../../libs/vendor/pixi.js"></script>
+  <script type="text/javascript" src="../../libs/vendor/fontfaceobserver.js"></script>
+  <script type="text/javascript" src="../../libs/vendor/tweenjs.js"></script>
+  <!-- endbuild -->
 
-   <!-- build:js config.js -->
-   <script type="text/javascript" src="config.js"></script>
-   <!-- endbuild -->
+  <!-- build:js config.js -->
+  <script type="text/javascript" src="config.js"></script>
+  <!-- endbuild -->
 
-   <!-- build:js playable.js -->
-   <script type="text/javascript" src="../../libs/DomLayout.js"></script>
-   <script type="text/javascript" src="../../libs/I18.js"></script>
-   <script type="text/javascript" src="../../libs/AssetsPreloader.js"></script>
-   <script type="text/javascript" src="../../libs/LayoutManager.js"></script>
-   <script type="text/javascript" src="../../libs/Sprite.js"></script>
-   <script type="text/javascript" src="../../libs/RunTime.js"></script>
-   <script type="text/javascript" src="../../libs/GameWindow.js"></script>
-   <script type="text/javascript" src="../../libs/Tween.js"></script>
-   <script type="text/javascript" src="../../libs/SoundsManager.js"></script>	
-   <script type="text/javascript" src="../../libs/Timer.js"></script>
-   <script type="text/javascript" src="../../libs/ParticlesSprite.js"></script>
-   <!-- <script type="text/javascript" src="../../libs/web-console.js"></script>	 -->
-   <script type="text/javascript" src="Game.js"></script>
+  <!-- build:js playable.js -->
+  <script type="text/javascript" src="../../libs/AssetsPreloader.js"></script>
+  <script type="text/javascript" src="../../libs/LayoutManager.js"></script>
+  <script type="text/javascript" src="../../libs/Sprite.js"></script>
+  <script type="text/javascript" src="../../libs/GameWindow.js"></script>
+  <script type="text/javascript" src="../../libs/Tween.js"></script>
+  <script type="text/javascript" src="../../libs/Timer.js"></script>
+  <script type="text/javascript" src="Game.js"></script>
 
-   <script type="text/javascript" src="scenes.js"></script>
+  <script type="text/javascript" src="game/Main.js"></script>
+  <script type="text/javascript" src="game/engine/Field.js"></script>
+  <script type="text/javascript" src="game/engine/Token.js"></script>
+  <script type="text/javascript" src="game/utils/Utils.js"></script>
+  <!-- endbuild -->
 
+  <!-- build:js assets.js -->
+  <script type="text/javascript" src="assets.js"></script>
+  <!-- endbuild -->
 
-   <script type="text/javascript" src="game/Main.js"></script>
+  <!-- build:js preloader.js -->
+  <script type="text/javascript" src="../../libs/preloader/default.js"></script>
+  <!-- endbuild -->
 
-   <script type="text/javascript" src="game/configs/particles.js"></script>
-   <script type="text/javascript" src="game/configs/game.js"></script>
-
-   <script type="text/javascript" src="game/stages/Outro.js"></script>
-   <script type="text/javascript" src="game/stages/OutroCard.js"></script>
-   <script type="text/javascript" src="game/stages/OutroCardStars.js"></script>
-   <script type="text/javascript" src="game/stages/OutroCta.js"></script>
-
-   <script type="text/javascript" src="game/engine/Field.js"></script>
-   <script type="text/javascript" src="game/engine/Token.js"></script>
-   <script type="text/javascript" src="game/engine/Bomb.js"></script>
-   <script type="text/javascript" src="game/engine/BombChild.js"></script>
-   <script type="text/javascript" src="game/engine/Autoplay.js"></script>
-
-   <script type="text/javascript" src="game/utils/Utils.js"></script>
-
-   <script type="text/javascript" src="game/ui/Water.js"></script>
-   <script type="text/javascript" src="game/ui/CtaBtn.js"></script>
-   <script type="text/javascript" src="game/ui/ProgressBar.js"></script>
-   <script type="text/javascript" src="game/ui/Hint.js"></script>
-   <script type="text/javascript" src="game/ui/Star.js"></script>
-   <script type="text/javascript" src="game/ui/Message.js"></script>
-   <script type="text/javascript" src="game/ui/CloudsCont.js"></script>
-
-
-   <script type="text/javascript" src="game/ui/ground/GroundCont.js"></script>
-   <script type="text/javascript" src="game/ui/ground/Ground.js"></script>
-
-   <script type="text/javascript" src="game/ui/field/FieldGame.js"></script>
-   <script type="text/javascript" src="game/ui/field/FieldAnimations.js"></script>
-   <script type="text/javascript" src="game/ui/field/FieldToken.js"></script>
-   <script type="text/javascript" src="game/ui/field/Bird.js"></script>
-   <script type="text/javascript" src="game/ui/field/BottomArrow.js"></script>
-
-   <script type="text/javascript" src="game/ui/hero/HeroesCont.js"></script>
-   <script type="text/javascript" src="game/ui/hero/Hero.js"></script>
-
-   <script type="text/javascript" src="game/ui/enemy/Enemy.js"></script>
-   <script type="text/javascript" src="game/ui/enemy/EnemiesCont.js"></script>
-   <script type="text/javascript" src="game/ui/enemy/EnemyTail.js"></script>
-   <script type="text/javascript" src="game/ui/enemy/EnemyLifeBar.js"></script>
-
-   <!-- endbuild -->
-
-   <!-- build:js assets.js -->
-   <script type="text/javascript" src="assets.js"></script>
-   <!-- endbuild -->
-
-   <!-- build:js preloader.js -->
-   <script type="text/javascript" src="../../libs/preloader/default.js"></script>
-   <!-- endbuild -->
-
-   <!-- build:js index.js -->
-   <script type="text/javascript" src="index.js"></script>
-   <!-- endbuild -->
+  <!-- build:js index.js -->
+  <script type="text/javascript" src="index.js"></script>
+  <!-- endbuild -->
 
 </head>
 
